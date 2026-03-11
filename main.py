@@ -13,7 +13,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # use "*" to allow all
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],i can
     allow_headers=["*"],
 )
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -29,9 +29,12 @@ def home():
 @app.post("/find-games")
 def find_games(req: GameRequest):
 
-    prompt = f"Suggest 3 pickup {req.sport} games someone could join in {req.location}"
+    prompt =  (f"Suggest 3 pickup {req.sport} games someone could join in {req.location}. "
+        "Return each game as a JSON object with fields: title, location, time, players. "
+        "The output must be a JSON array."
+    )
 
-    url = "https://api.groq.com/openai/v1/chat/completions"
+    url = "https://api/groq.com/openai/v1/chat/completions"
 
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
@@ -43,6 +46,18 @@ def find_games(req: GameRequest):
         "messages": [{"role": "user", "content": prompt}]
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    # Call the LLM
+    response = requests.post(url, headers=headers, json=data).json()
 
-    return response.json()
+    # Extract the LLM text content
+    content = response["choices"][0]["message"]["content"]
+
+    # Parse the JSON safely
+    import json
+    try:
+        games = json.loads(content)
+    except json.JSONDecodeError:
+        games = []  # fallback if parsing fails
+
+    # Return in the format Lovable expects
+    return {"games": games}
