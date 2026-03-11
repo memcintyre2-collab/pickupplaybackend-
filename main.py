@@ -4,16 +4,13 @@ import requests
 import os
 
 app = FastAPI()
-from fastapi.middleware.cors import CORSMiddleware
-
 origins = [
-    "https://*.lovableproject.com",
-    "http://localhost",
+    "*"  # allow all domains; simpler for testing with Lovable
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,  # use "*" to allow all
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
