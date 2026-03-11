@@ -13,7 +13,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # use "*" to allow all
     allow_credentials=True,
-    allow_methods=["*"],i can
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -29,11 +29,12 @@ def home():
 @app.post("/find-games")
 def find_games(req: GameRequest):
 
-    prompt =  (f"Suggest 3 pickup {req.sport} games someone could join in {req.location}. "
-        "Return each game as a JSON object with fields: title, location, time, players. "
-        "The output must be a JSON array."
-    )
-
+    prompt = f"""
+    Suggest 3 pickup {req.sport} games someone could join in {req.location}.
+    Return each game as a JSON object with fields: title, location, time, players.
+    The output must be a JSON array.
+    """ 
+    
     url = "https://api/groq.com/openai/v1/chat/completions"
 
     headers = {
